@@ -64,8 +64,8 @@ const fetchDocuwareToken = () => {
           body.append("grant_type", "password");
           body.append("scope", "docuware.platform");
           body.append("client_id", "docuware.platform.net.client");
-          body.append("username", "Godson Aniagudo");
-          body.append("password", "TheAppDev24!");
+          body.append("username", process.env.DOCUWARE_USERNAME);
+          body.append("password", process.env.DOCUWARE_PASSWORD);
       
           const quote4 = await axios.post(
             identityServiceUrl + "/" + "connect/token",
