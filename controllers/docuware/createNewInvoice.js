@@ -16,11 +16,7 @@ exports.createNewInvoice = async (req, res, next) => {
 
         if (!invoiceRecord) {
             throw new Error404Handler("This invoice was not found.")
-        }
-
-        console.log({body: req.body});
-
-        
+        }   
 
         const currentDate = new Date()
         console.log({currentDate: String(currentDate.toLocaleString("en-NG")).replace(",", "").slice(0, 16)});

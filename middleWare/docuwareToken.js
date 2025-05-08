@@ -2,32 +2,37 @@ let docuwareToken = ""
 let expiryTime = 0
 const axios = require("axios");
 
-const addDocuwareToken = async (req, res, next) => {
+const  addDocuwareToken = async (req, res, next) => {
     if (!docuwareToken) {
         //Request a new token and pass it to the controller
         const fetchedToken = await fetchDocuwareToken()
 
         console.log({docuwareToken});
+        console.log({fetchedToken});
+        console.log({fetchedTokenData: fetchedToken?.data});
+        
+        
         if (fetchedToken.status === 200 && fetchedToken?.data?.access_token) {
-            let currentTime = Date.now()
+            let currentTime = new Date()
             
-            expiryTime = currentTime + ((fetchedToken?.data?.expires_in * 1000) - 100)
+            expiryTime = (currentTime.getTime()/1000) + fetchedToken?.data?.expires_in
             docuwareToken = fetchedToken?.data?.access_token
             req.docuwareToken = fetchedToken?.data?.access_token
             next() 
         }
     } else {
         //Authenticate existing token. If token is stil valid, pass it to controller, else fetch a new token
-        let currentTime = Date.now()
+        let currentTime = new Date()
+        currentTime = currentTime.getTime()/1000
         if (expiryTime < currentTime ) {
             console.log({tokenExpired: "Token has expired"});
             const fetchedToken = await fetchDocuwareToken()
 
             console.log({docuwareToken, fetchedToken});
-            if (docuwareToken.status === 200 && fetchedToken?.data?.access_token) {
-                let currentTime = Date.now()
-                
-                expiryTime = currentTime + ((fetchedToken?.data?.expires_in * 1000) - 100)
+            if (fetchedToken.status === 200 && fetchedToken?.data?.access_token) {
+                let currentTime = new Date()
+              
+                expiryTime = (currentTime.getTime()/1000) + fetchedToken?.data?.expires_in
                 docuwareToken = fetchedToken?.data?.access_token
                 req.docuwareToken = fetchedToken?.data?.access_token
                 next() 
@@ -58,7 +63,7 @@ const fetchDocuwareToken = () => {
             url: identityServiceUrl + "/" + ".well-known/openid-configuration",
           });
       
-          console.log({identityServiceUrl, quote2});
+          // console.log({identityServiceUrl, quote2});
       
           const body = new URLSearchParams();
           body.append("grant_type", "password");
@@ -72,7 +77,7 @@ const fetchDocuwareToken = () => {
             body
           );
 
-          console.log({quote4});
+          // console.log({quote4});
 
           if (quote4) {
             resolve(quote4)
