@@ -30,7 +30,6 @@ exports.createInvoiceFormRecord = async (req, res, next) => {
     //Save new invoice record
     const savedNewInvoice = await newInvoiceRecord.save()
 
-    console.log({savedNewInvoice});
 
     res.status(200).send({status: "OK"})
 
