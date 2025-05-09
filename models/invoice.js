@@ -234,6 +234,9 @@ const Schema = new mongoose.Schema({
     },
     CALL_OFF_NUMBER: {
 
+    },
+    PAYMENT_TERMS: {
+        
     }
     }, {timestamps: true})
 
