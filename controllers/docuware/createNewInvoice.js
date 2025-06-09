@@ -24,7 +24,7 @@ exports.createNewInvoice = async (req, res, next) => {
 
 
         //Validate supplied details
-        const {CONTRACTOR_EMAIL, TIN, INVOICED_AMOUNT, INVOICE_NUMBER, PAYMENT_OPTION, MILESTONE, INVOICE_DATE, CALL_OFF_NUMBER} = req.body
+        const {CONTRACTOR_EMAIL, TIN, INVOICED_AMOUNT, INVOICE_NUMBER, PAYMENT_OPTION, MILESTONE, INVOICE_DATE, CALL_OFF_NUMBER, MILESTONE_PERCENTAGE} = req.body
 
         let docuwareInvoiceBody = []
 
@@ -83,8 +83,8 @@ exports.createNewInvoice = async (req, res, next) => {
             })
         }
 
-        if (PAYMENT_OPTION === "Milestone" && !MILESTONE) {
-            throw new Error400Handler("Please enter the milestone/service completed")
+        if (PAYMENT_OPTION === "Milestone" && !MILESTONE_PERCENTAGE) {
+            throw new Error400Handler("Please enter a milestone percentage")
         } else {
             docuwareInvoiceBody.push({
                 FieldName: "MILESTONE",
@@ -119,7 +119,7 @@ exports.createNewInvoice = async (req, res, next) => {
         console.log({totalInvoicedAmount, invoiceDAMount: INVOICED_AMOUNT, contractValue: invoiceRecord.CONTRACT_VALUE, CALL_OFF_NUMBER});
 
         if ((totalInvoicedAmount + Number(INVOICED_AMOUNT)) > invoiceRecord.CONTRACT_VALUE) {
-            throw new Error400Handler("The total amounts you have invoiced is greater than the invoice value")
+            throw new Error400Handler("The total amounts you have invoiced is greater than the contract/call-off value")
         }
 
         console.log({name: invoiceRecord.CONTRACTOR_NAME, department: invoiceRecord.DEPARTMENT, title: invoiceRecord.DOCUMENT_TITLE, entity: invoiceRecord.AMNI_ENTITY, currency: invoiceRecord.CURRENCY});

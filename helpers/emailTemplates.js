@@ -431,6 +431,38 @@ const endUserApprovedNotificationTemplate = ({name, companyName, vendorID, issue
 }
 
 
+
+
+
+
+
+const invoiceSubmissionFormLinkTemplate = ({link}) => {
+    return {
+        html : `
+
+        <p>Dear User, </p>
+        <p>Thank you for submitting the contract review form. An invoice submission link has now been generated for you.</p>
+
+        <p> The link is <a href="${link}" >${link}</a>.<p>
+
+        <p>You can copy the link for inclusion in the contract draft.</p>
+
+        <p> Regards.</p>
+    
+    
+        `,
+        text: `
+
+        Dear User,
+        Thank you for submitting the contract review form. An invoice submission link has now been generated for you.
+        The link is ${link}
+        You can copy the link for inclusion in the contract draft.
+        Regards.
+        `
+    }
+}
+
+
 module.exports = {
     registrationInviteEmailTemplate,
     registrationInviteReminderEmailTemplate,
@@ -441,5 +473,6 @@ module.exports = {
     endUserNotificationTemplate,
     endUserApprovedNotificationTemplate,
     setAsSubstituteTemplate,
-    newPortalAdminRequestTemplate
+    newPortalAdminRequestTemplate,
+    invoiceSubmissionFormLinkTemplate
 }

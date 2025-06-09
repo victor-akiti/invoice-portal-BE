@@ -237,6 +237,9 @@ const Schema = new mongoose.Schema({
     },
     PAYMENT_TERMS: {
         
+    },
+    PAYMENT_OPTION : {
+        
     }
     }, {timestamps: true})
 

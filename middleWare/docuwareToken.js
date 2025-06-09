@@ -6,11 +6,6 @@ const  addDocuwareToken = async (req, res, next) => {
     if (!docuwareToken) {
         //Request a new token and pass it to the controller
         const fetchedToken = await fetchDocuwareToken()
-
-        console.log({docuwareToken});
-        console.log({fetchedToken});
-        console.log({fetchedTokenData: fetchedToken?.data});
-        
         
         if (fetchedToken.status === 200 && fetchedToken?.data?.access_token) {
             let currentTime = new Date()

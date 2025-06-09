@@ -8,7 +8,7 @@ const upload = multer({dest:  __dirname +  "/uploads"})
 
 const Router = require("express").Router()
 
-Router.post("/createInvoiceRecord", createInvoiceFormRecord)
+Router.post("/createInvoiceRecord", addDocuwareToken, createInvoiceFormRecord)
 Router.get("/invoice/record/:invoiceCode", fetchInvoiceDetails)
 Router.post("/invoice/new",addDocuwareToken, createNewInvoice)
 Router.post("/invoice/attachFiles/:documentID", addDocuwareToken, upload.array("file"), attachFilesToNewInvoice)

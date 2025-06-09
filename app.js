@@ -58,13 +58,13 @@ app.use("/approvals", approvalRouter)
 app.use("/events", eventsRouter)
 
 
-// const smee = new SmeeClient({
-//     source: 'https://smee.io/bRrz1sAx2t9nAwe',
-//     target: process.env.BACKEND_URL + 'docuware/createInvoiceRecord',
-//     logger: console
-// })
+const smee = new SmeeClient({
+    source: 'https://smee.io/bRrz1sAx2t9nAwe',
+    target: process.env.BACKEND_URL + '/docuware/createInvoiceRecord',
+    logger: console
+})
 
-// const events = smee.start()
+const events = smee.start()
 
 
 
