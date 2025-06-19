@@ -17,11 +17,11 @@ exports.invalidateRejectedInvoice = async (req, res, next) => {
 
        const invoiceFormLink = `${process.env.FRONTEND_URL}/invoice/${updatedInvoiceRecord?.INVOICE_FORM_ID?.INVOICE_CODE}`
 
-       console.log({updatedInvoiceRecord});
+
        emailContractorOnInvoiceRejection(invoiceFormLink, updatedInvoiceRecord.INVOICE_NUMBER, COMMENT, updatedInvoiceRecord.CONTRACTOR_EMAIL, updatedInvoiceRecord?.INVOICE_FORM_ID?.DEPARTMENT)
        
 
-       res.status(200).send({})
+       res.status(200).send({status: "OK"})
 
    
    
