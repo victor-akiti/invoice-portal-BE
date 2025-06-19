@@ -60,7 +60,7 @@ app.use("/events", eventsRouter)
 
 // const smee = new SmeeClient({
 //     source: 'https://smee.io/bRrz1sAx2t9nAwe',
-//     target: process.env.BACKEND_URL + '/docuware/createInvoiceRecord',
+//     target: process.env.BACKEND_URL + '/docuware/invalidate',
 //     logger: console
 // })
 

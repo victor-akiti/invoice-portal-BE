@@ -436,28 +436,51 @@ const endUserApprovedNotificationTemplate = ({name, companyName, vendorID, issue
 
 
 
-const invoiceSubmissionFormLinkTemplate = ({link}) => {
+const invoiceSubmissionFormLinkTemplate = ({link, contractorName}) => {
     return {
         html : `
 
-        <p>Dear User, </p>
-        <p>Thank you for submitting the contract review form. An invoice submission link has now been generated for you.</p>
-
-        <p> The link is <a href="${link}" >${link}</a>.<p>
-
-        <p>You can copy the link for inclusion in the contract draft.</p>
-
-        <p> Regards.</p>
-    
-    
+        <p>Dear User,</p>
+        <p>The <strong>Contract Review Form</strong> for <strong>${contractorName}</strong> has been successfully submitted.</p>
+        <p>Please find below the link to the <strong>invoice form</strong> for your reference:</p>
+        <p><a href="${link}" >${link}</a></p>
+        <p>Kindly ensure that this link is included in the contractor’s contract to facilitate their invoice submission.</p>
         `,
         text: `
 
         Dear User,
-        Thank you for submitting the contract review form. An invoice submission link has now been generated for you.
-        The link is ${link}
-        You can copy the link for inclusion in the contract draft.
-        Regards.
+        The Contract Review Form for XYZ NIGERIA LIMITED has been successfully submitted.
+        Please find below the link to the invoice form for your reference:
+        ${link}
+        Kindly ensure that this link is included in the contractor’s contract to facilitate their invoice submission.
+        `
+    }
+}
+
+
+
+
+const rejectedInvoiceEmailTemplate = ({invoiceLink, invoiceNumber, rejectionReason, department}) => {
+    return {
+        html : `
+
+        <p>Dear Contractor</p>
+        <p>Your Invoice with invoice no: <strong style="color:#ab0000;">${invoiceNumber}</strong> has been rejected by <span style="color:#ab0000;">${department}</span> due to the following reason.</p>
+        <p style="color:#ab0000;"><strong>${rejectionReason}</strong></p>
+        <p>Kindly use the invoice link below to resubmit your invoice.</p>
+        <p style="color:#ab0000;"><strong><a href="${invoiceLink}" >${invoiceLink}</a></strong></p>
+        <p>Regards,</p>
+
+        `,
+        text: `
+
+        Dear Contractor
+        Your Invoice with invoice no: ${invoiceNumber} has been rejected by Information Management due to the following reason.
+        ${rejectionReason}
+        Kindly use the invoice link below to resubmit your invoice.
+        ${invoiceLink}
+        Regards,
+
         `
     }
 }
@@ -474,5 +497,6 @@ module.exports = {
     endUserApprovedNotificationTemplate,
     setAsSubstituteTemplate,
     newPortalAdminRequestTemplate,
-    invoiceSubmissionFormLinkTemplate
+    invoiceSubmissionFormLinkTemplate,
+    rejectedInvoiceEmailTemplate
 }

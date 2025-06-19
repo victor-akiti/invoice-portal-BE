@@ -18,7 +18,7 @@ exports.createInvoiceFormRecord = async (req, res, next) => {
     //Check if required fields are filled
     const {CONTRACTOR_NAME, DOCUMENT_NUMBER, STATUS, TENDER_STRATEGY, DOCUMENT_TITLE, CURRENCY, CONTRACT_VALUE, DATE, DEPARTMENT, AMNI_ENTITY, SPONSORING_DEPARTMENT, BUDGET_CODE, CONTRACT_NUMBER, PR_NUMBER, CALL_OFF_NUMBER, PAYMENT_TERMS, PAYMENT_OPTION, DWSTOREUSER, STORE_USER, ANALYST_EMAIL} = req.body
 
-    console.log({CONTRACTOR_NAME, DOCUMENT_NUMBER, STATUS, TENDER_STRATEGY, DOCUMENT_TITLE, CURRENCY, CONTRACT_VALUE, DATE, DEPARTMENT, STORE_USER, ANALYST_EMAIL});
+    console.log({CONTRACTOR_NAME, DOCUMENT_NUMBER, STATUS, TENDER_STRATEGY, DOCUMENT_TITLE, CURRENCY, CONTRACT_VALUE, DATE, DEPARTMENT, STORE_USER, ANALYST_EMAIL, PAYMENT_OPTION, PAYMENT_TERMS});
 
     //Generate invoice code
     const cryptoRandomString = await importRandomStringGen()
@@ -35,7 +35,7 @@ exports.createInvoiceFormRecord = async (req, res, next) => {
     //Send email to contract analyst
     const invoiceFormLink = `${process.env.FRONTEND_URL}/invoice/${savedNewInvoice.INVOICE_CODE}`
 
-    emailContractAnalystInvoiceFormLink( ANALYST_EMAIL, invoiceFormLink)
+    emailContractAnalystInvoiceFormLink( ANALYST_EMAIL, invoiceFormLink, CONTRACTOR_NAME)
 
 
 
@@ -48,7 +48,7 @@ exports.createInvoiceFormRecord = async (req, res, next) => {
  }
 }
 
-const emailContractAnalystInvoiceFormLink = async (analystEmail, link) => {
+const emailContractAnalystInvoiceFormLink = async (analystEmail, link, contractorName) => {
    try {
             //Send an email to the administrator or the person who sent the invite to inform them that the user they invited has completed their registration.
             const sendInviteEmail = await sendMail({
@@ -56,10 +56,10 @@ const emailContractAnalystInvoiceFormLink = async (analystEmail, link) => {
                //  bcc: req.user.email,
                 subject: "Invoice Submission Form Link",
                 html: invoiceSubmissionFormLinkTemplate({
-                    link
+                    link, contractorName
                 }).html,
                 text: invoiceSubmissionFormLinkTemplate({
-                    link
+                    link, contractorName
                 }).text
             })
 

@@ -243,6 +243,14 @@ const Schema = new mongoose.Schema({
     },
     INVOICE_ID: {
         type: String
+    },
+    PAYMENT_TERMS: {
+
+    },
+    status: {
+        type: String,
+        enum:  ["Submitted", "Rejected"],
+        default: "Submitted"
     }
     }, {timestamps: true})
 

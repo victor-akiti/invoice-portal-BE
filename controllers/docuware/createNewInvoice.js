@@ -19,7 +19,8 @@ exports.createNewInvoice = async (req, res, next) => {
         }   
 
         const currentDate = new Date()
-        console.log({currentDate: String(currentDate.toLocaleString("en-NG")).replace(",", "").slice(0, 16)});
+
+        const invoiceRecordId = new mongoose.Types.ObjectId()
 
 
 
@@ -100,7 +101,7 @@ exports.createNewInvoice = async (req, res, next) => {
 
         let totalInvoicedAmount = 0
 
-        const invoicedAmounts = await InvoiceRecordModel.find({INVOICE_FORM_ID: new mongoose.Types.ObjectId(invoiceRecord._id)})
+        const invoicedAmounts = await InvoiceRecordModel.find({INVOICE_FORM_ID: new mongoose.Types.ObjectId(invoiceRecord._id), status: "Submitted"})
 
         for (let index = 0; index < invoicedAmounts.length; index++) {
             const element = invoicedAmounts[index];
@@ -198,6 +199,17 @@ exports.createNewInvoice = async (req, res, next) => {
             Item: "Submitted",
         })
 
+        docuwareInvoiceBody.push({
+            FieldName: "MARKUP_APPLICABLE_3",
+            Item: invoiceRecordId,
+        })
+
+        docuwareInvoiceBody.push({
+            FieldName: "PAYMENT_TERM",
+            Item: invoiceRecord.PAYMENT_TERMS === "Yes" ? 1 : invoiceRecord.PAYMENT_TERMS,
+        })
+        
+
         //Push invoice to docuware
         
 
@@ -259,7 +271,7 @@ exports.createNewInvoice = async (req, res, next) => {
                 let invoiceRecordCopy = {...invoiceRecord}
                 delete invoiceRecordCopy["_id"]
 
-                const newInvoice = new InvoiceRecordModel({...invoiceRecordCopy, CONTRACTOR_EMAIL, TIN, INVOICE_NUMBER, PAYMENT_OPTION, INVOICE_DATE, INVOICE_AMOUNT: INVOICED_AMOUNT, MILESTONE, INVOICE_FORM_ID: invoiceRecord._id, INVOICE_ID: result.Document["$"].Id})
+                const newInvoice = new InvoiceRecordModel({...invoiceRecordCopy, _id: invoiceRecordId, PAYMENT_TERMS: invoiceRecord.PAYMENT_TERMS, CONTRACTOR_EMAIL, TIN, INVOICE_NUMBER, PAYMENT_OPTION, INVOICE_DATE, INVOICE_AMOUNT: INVOICED_AMOUNT, MILESTONE, INVOICE_FORM_ID: invoiceRecord._id, INVOICE_ID: result.Document["$"].Id})
 
                 const savedNewInvoice = await newInvoice.save()
 

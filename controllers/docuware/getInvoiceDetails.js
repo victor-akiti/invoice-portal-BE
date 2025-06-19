@@ -18,7 +18,7 @@ exports.fetchInvoiceDetails = async (req, res, next) => {
 
         let totalInvoicedAmount = 0
 
-        const invoicedAmounts = await InvoiceRecordModel.find({INVOICE_FORM_ID: new mongoose.Types.ObjectId(invoiceRecord._id)})
+        const invoicedAmounts = await InvoiceRecordModel.find({INVOICE_FORM_ID: new mongoose.Types.ObjectId(invoiceRecord._id), status: "Submitted"})
 
         console.log({invoicedAmounts});
 
