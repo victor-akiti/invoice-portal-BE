@@ -25,7 +25,9 @@ exports.createNewInvoice = async (req, res, next) => {
 
 
         //Validate supplied details
-        const {CONTRACTOR_EMAIL, TIN, INVOICED_AMOUNT, INVOICE_NUMBER, PAYMENT_OPTION, MILESTONE, INVOICE_DATE, CALL_OFF_NUMBER, MILESTONE_PERCENTAGE} = req.body
+        const {CONTRACTOR_EMAIL, TIN, INVOICED_AMOUNT, INVOICE_NUMBER, PAYMENT_OPTION, MILESTONE, INVOICE_DATE, CALL_OFF_NUMBER, MILESTONE_PERCENTAGE, CURRENCY, SELECTED_CURRENCY} = req.body
+
+        let selectedCurrency = ""
 
         let docuwareInvoiceBody = []
 
@@ -95,21 +97,7 @@ exports.createNewInvoice = async (req, res, next) => {
 
 
 
-        if (INVOICED_AMOUNT > invoiceRecord.CONTRACT_VALUE) {
-            throw new Error400Handler("The amount you entered is greater than the contract value")
-        }
-
-        let totalInvoicedAmount = 0
-
-        const invoicedAmounts = await InvoiceRecordModel.find({INVOICE_FORM_ID: new mongoose.Types.ObjectId(invoiceRecord._id), status: "Submitted"})
-
-        for (let index = 0; index < invoicedAmounts.length; index++) {
-            const element = invoicedAmounts[index];
-
-            totalInvoicedAmount = totalInvoicedAmount + element.INVOICE_AMOUNT
-            
-        }
-
+        
         //Check if invoice with that number has been submitted
         const invoiceAlreadySubmitted = await InvoiceRecordModel.findOne({INVOICE_NUMBER})
 
@@ -117,11 +105,61 @@ exports.createNewInvoice = async (req, res, next) => {
             throw new Error403Handler("An invoice with this invoice number has beeen submitted.")
         }
 
-        console.log({totalInvoicedAmount, invoiceDAMount: INVOICED_AMOUNT, contractValue: invoiceRecord.CONTRACT_VALUE, CALL_OFF_NUMBER});
 
-        if ((totalInvoicedAmount + Number(INVOICED_AMOUNT)) > invoiceRecord.CONTRACT_VALUE) {
-            throw new Error400Handler("The total amounts you have invoiced is greater than the contract/call-off value")
+        let totalInvoicedAmount = 0
+
+        if (invoiceRecord.OTHER_CURRENCY_REQUIRED === "Yes") {
+            
+            let contract_value = 0
+            selectedCurrency = SELECTED_CURRENCY
+
+            if (SELECTED_CURRENCY === CURRENCY) { 
+                contract_value = invoiceRecord.CONTRACT_VALUE
+            } else {
+                contract_value = invoiceRecord.OTHER_CONTRACT_VALUE
+            }
+
+            if (INVOICED_AMOUNT > contract_value) {
+                throw new Error400Handler("The amount you entered is greater than the contract value for the selected currency")
+            }
+
+            const invoicedAmounts = await InvoiceRecordModel.find({INVOICE_FORM_ID: new mongoose.Types.ObjectId(invoiceRecord._id), status: "Submitted", CURRENCY: SELECTED_CURRENCY})
+
+            for (let index = 0; index < invoicedAmounts.length; index++) {
+                const element = invoicedAmounts[index];
+
+                totalInvoicedAmount = totalInvoicedAmount + element.INVOICE_AMOUNT
+                
+            }
+
+            if ((totalInvoicedAmount + Number(INVOICED_AMOUNT)) > contract_value) {
+                throw new Error400Handler("The total amounts you have invoiced is greater than the contract/call-off value for the selected currency")
+            }
+
+            
+        } else {
+            selectedCurrency = CURRENCY
+            if (INVOICED_AMOUNT > invoiceRecord.CONTRACT_VALUE) {
+                throw new Error400Handler("The amount you entered is greater than the contract value")
+            }
+
+            const invoicedAmounts = await InvoiceRecordModel.find({INVOICE_FORM_ID: new mongoose.Types.ObjectId(invoiceRecord._id), status: "Submitted"})
+
+            for (let index = 0; index < invoicedAmounts.length; index++) {
+                const element = invoicedAmounts[index];
+
+                totalInvoicedAmount = totalInvoicedAmount + element.INVOICE_AMOUNT
+                
+            }
+
+            if ((totalInvoicedAmount + Number(INVOICED_AMOUNT)) > invoiceRecord.CONTRACT_VALUE) {
+                throw new Error400Handler("The total amounts you have invoiced is greater than the contract/call-off value")
+            }
+    
+
         }
+
+    
 
         console.log({name: invoiceRecord.CONTRACTOR_NAME, department: invoiceRecord.DEPARTMENT, title: invoiceRecord.DOCUMENT_TITLE, entity: invoiceRecord.AMNI_ENTITY, currency: invoiceRecord.CURRENCY});
 
@@ -191,7 +229,7 @@ exports.createNewInvoice = async (req, res, next) => {
 
         docuwareInvoiceBody.push({
             FieldName: "CURRENCY",
-            Item: invoiceRecord.CURRENCY,
+            Item: selectedCurrency,
         })
 
         docuwareInvoiceBody.push({
@@ -271,7 +309,7 @@ exports.createNewInvoice = async (req, res, next) => {
                 let invoiceRecordCopy = {...invoiceRecord}
                 delete invoiceRecordCopy["_id"]
 
-                const newInvoice = new InvoiceRecordModel({...invoiceRecordCopy, _id: invoiceRecordId, PAYMENT_TERMS: invoiceRecord.PAYMENT_TERMS, CONTRACTOR_EMAIL, TIN, INVOICE_NUMBER, PAYMENT_OPTION, INVOICE_DATE, INVOICE_AMOUNT: INVOICED_AMOUNT, MILESTONE, INVOICE_FORM_ID: invoiceRecord._id, INVOICE_ID: result.Document["$"].Id})
+                const newInvoice = new InvoiceRecordModel({...invoiceRecordCopy, _id: invoiceRecordId, PAYMENT_TERMS: invoiceRecord.PAYMENT_TERMS, CONTRACTOR_EMAIL, TIN, INVOICE_NUMBER, PAYMENT_OPTION, INVOICE_DATE, INVOICE_AMOUNT: INVOICED_AMOUNT, MILESTONE, CURRENCY: selectedCurrency, INVOICE_FORM_ID: invoiceRecord._id, INVOICE_ID: result.Document["$"].Id})
 
                 const savedNewInvoice = await newInvoice.save()
 

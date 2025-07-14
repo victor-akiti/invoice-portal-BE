@@ -441,7 +441,7 @@ const invoiceSubmissionFormLinkTemplate = ({link, contractorName}) => {
         html : `
 
         <p>Dear User,</p>
-        <p>The <strong>Contract Review Form</strong> for <strong>${contractorName}</strong> has been successfully submitted.</p>
+        <p>An <strong>invoice submission link</strong> for <strong>${contractorName}</strong> has been successfully generated.</p>
         <p>Please find below the link to the <strong>invoice form</strong> for your reference:</p>
         <p><a href="${link}" >${link}</a></p>
         <p>Kindly ensure that this link is included in the contractor’s contract to facilitate their invoice submission.</p>
@@ -449,7 +449,7 @@ const invoiceSubmissionFormLinkTemplate = ({link, contractorName}) => {
         text: `
 
         Dear User,
-        The Contract Review Form for XYZ NIGERIA LIMITED has been successfully submitted.
+        An invoice submission link for ${contractorName} has been successfully generated.</p>
         Please find below the link to the invoice form for your reference:
         ${link}
         Kindly ensure that this link is included in the contractor’s contract to facilitate their invoice submission.
